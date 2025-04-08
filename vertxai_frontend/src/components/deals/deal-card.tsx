@@ -9,7 +9,7 @@ export type Deal = {
   title: string;
   description: string;
   price: number;
-  status: "pending" | "progress" | "completed" | "cancelled";
+  status: "pending" | "progress" | "completed" | "cancelled" | "on-hold";
   createdAt: string;
   messages: number;
   documents: number;

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -12,6 +11,8 @@ import { Loader2 } from "lucide-react";
 import { CreateDeals } from "@/services/authService";
 
 const CreateDealPage = () => {
+  const userDetails = JSON.parse(localStorage?.getItem("user"));
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
@@ -28,20 +29,21 @@ const CreateDealPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-  
+
     try {
+      const sellerId = userDetails?._id;
       await CreateDeals({
         title,
         description,
         price,
-        // status: "pending", 
+        sellerId,
       });
-  
+
       toast({
         title: "Deal Created",
         description: "Your deal has been successfully created",
       });
-  
+
       navigate("/dashboard");
     } catch (error) {
       toast({
@@ -53,7 +55,7 @@ const CreateDealPage = () => {
       setIsLoading(false);
     }
   };
-  
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
@@ -98,7 +100,8 @@ const CreateDealPage = () => {
                 required
               />
               <p className="text-sm text-gray-500">
-                This is your {user?.role === "seller" ? "asking" : "offer"} price. It can be negotiated later.
+                This is your {user?.role === "seller" ? "asking" : "offer"}{" "}
+                price. It can be negotiated later.
               </p>
             </div>
 
@@ -106,7 +109,8 @@ const CreateDealPage = () => {
               <Button type="submit" disabled={isLoading} className="w-full">
                 {isLoading ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Creating Deal
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Creating
+                    Deal
                   </>
                 ) : (
                   "Create Deal"

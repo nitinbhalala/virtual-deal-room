@@ -35,23 +35,17 @@ export const CreateDeals = async (data: {
     description: string;
     price: any;
     // status: string;
+    sellerId:string;
 }) => {
     const response = await api.post("/deals", data);
     return response.data; // should return { token, user }
 };
 
 //Show Deals
-export const GetDeals = async (data: {
-    title: string;
-    description: string;
-    price: any;
-    // status: string;
-}) => {
-    const response = await api.post("/deals", data);
+export const getAllDeals = async () => {
+    const response = await api.get("/deals");
     return response.data; // should return { token, user }
 };
-
-
 
 
 

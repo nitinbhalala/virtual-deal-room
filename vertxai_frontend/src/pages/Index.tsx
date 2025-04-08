@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -6,6 +5,8 @@ import { Navbar } from "@/components/layout/navbar";
 import { CheckCircle, Shield, MessageSquare, FileText } from "lucide-react";
 
 const Index = () => {
+  const userDetails = JSON.parse(localStorage?.getItem("user"));
+
   const { isAuthenticated } = useAuth();
 
   return (
@@ -21,24 +22,37 @@ const Index = () => {
                   Secure Business Transactions in One Place
                 </h1>
                 <p className="text-lg md:text-xl text-white/90 max-w-[600px]">
-                  Negotiate deals, exchange documents, and finalize transactions securely in our virtual deal room.
+                  Negotiate deals, exchange documents, and finalize transactions
+                  securely in our virtual deal room.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
                   {isAuthenticated ? (
                     <Link to="/dashboard">
-                      <Button size="lg" variant="default" className="bg-white text-primary hover:bg-white/90">
+                      <Button
+                        size="lg"
+                        variant="default"
+                        className="bg-white text-primary hover:bg-white/90"
+                      >
                         Go to Dashboard
                       </Button>
                     </Link>
                   ) : (
                     <>
                       <Link to="/register">
-                        <Button size="lg" variant="default" className="bg-white text-primary hover:bg-white/90">
+                        <Button
+                          size="lg"
+                          variant="default"
+                          className="bg-white text-primary hover:bg-white/90"
+                        >
                           Get Started
                         </Button>
                       </Link>
                       <Link to="/login">
-                        <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+                        <Button
+                          size="lg"
+                          variant="outline"
+                          className="border-white text-white hover:bg-white/10"
+                        >
                           Log In
                         </Button>
                       </Link>
@@ -58,7 +72,9 @@ const Index = () => {
                         </div>
                         <div>
                           <h3 className="font-medium">Real-time Negotiation</h3>
-                          <p className="text-sm text-white/80">Instant messaging with typing indicators</p>
+                          <p className="text-sm text-white/80">
+                            Instant messaging with typing indicators
+                          </p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-3">
@@ -67,7 +83,9 @@ const Index = () => {
                         </div>
                         <div>
                           <h3 className="font-medium">Secure Documents</h3>
-                          <p className="text-sm text-white/80">Upload and share with confidence</p>
+                          <p className="text-sm text-white/80">
+                            Upload and share with confidence
+                          </p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-3">
@@ -76,7 +94,9 @@ const Index = () => {
                         </div>
                         <div>
                           <h3 className="font-medium">Protection</h3>
-                          <p className="text-sm text-white/80">End-to-end security for all transactions</p>
+                          <p className="text-sm text-white/80">
+                            End-to-end security for all transactions
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -93,7 +113,8 @@ const Index = () => {
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold mb-4">How It Works</h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Our virtual deal room streamlines business transactions from negotiation to completion.
+                Our virtual deal room streamlines business transactions from
+                negotiation to completion.
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -103,7 +124,8 @@ const Index = () => {
                 </div>
                 <h3 className="text-xl font-bold mb-2">Negotiate</h3>
                 <p className="text-gray-600">
-                  Create deals and negotiate prices in real-time with secure messaging.
+                  Create deals and negotiate prices in real-time with secure
+                  messaging.
                 </p>
               </div>
               <div className="bg-gray-50 rounded-lg p-6 text-center">
@@ -121,7 +143,8 @@ const Index = () => {
                 </div>
                 <h3 className="text-xl font-bold mb-2">Finalize</h3>
                 <p className="text-gray-600">
-                  Close deals securely and maintain a record of all transactions.
+                  Close deals securely and maintain a record of all
+                  transactions.
                 </p>
               </div>
             </div>
@@ -134,17 +157,36 @@ const Index = () => {
             <div className="bg-primary rounded-2xl p-8 md:p-12 text-white text-center">
               <h2 className="text-3xl font-bold mb-4">Ready to Start?</h2>
               <p className="text-xl mb-6 max-w-xl mx-auto">
-                Join thousands of businesses making secure deals through our platform.
+                Join thousands of businesses making secure deals through our
+                platform.
               </p>
+
               {isAuthenticated ? (
-                <Link to="/deals/create">
-                  <Button size="lg" className="bg-white text-primary hover:bg-white/90">
-                    Create Your First Deal
-                  </Button>
-                </Link>
+                userDetails?.role === "seller" ? (
+                  <Link to="/deals/create">
+                    <Button
+                      size="lg"
+                      className="bg-white text-primary hover:bg-white/90"
+                    >
+                      Create Your First Deal
+                    </Button>
+                  </Link>
+                ) : (
+                  <Link to="/dashboard">
+                    <Button
+                      size="lg"
+                      className="bg-white text-primary hover:bg-white/90"
+                    >
+                      Go to Dashboard
+                    </Button>
+                  </Link>
+                )
               ) : (
                 <Link to="/register">
-                  <Button size="lg" className="bg-white text-primary hover:bg-white/90">
+                  <Button
+                    size="lg"
+                    className="bg-white text-primary hover:bg-white/90"
+                  >
                     Sign Up Now
                   </Button>
                 </Link>
@@ -178,7 +220,10 @@ const Index = () => {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/register" className="text-gray-400 hover:text-white">
+                  <Link
+                    to="/register"
+                    className="text-gray-400 hover:text-white"
+                  >
                     Register
                   </Link>
                 </li>

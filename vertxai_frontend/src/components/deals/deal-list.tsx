@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { DealCard, Deal } from "./deal-card";
 import { Input } from "@/components/ui/input";
@@ -9,15 +10,13 @@ type DealListProps = {
 };
 
 export function DealList({ deals }: DealListProps) {
-  console.log("🚀 ~ DealList ~ deals:", deals)
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
 
   const filteredDeals = deals.filter((deal) => {
-    const matchesSearch =
-      deal.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      deal.description.toLowerCase().includes(searchQuery.toLowerCase());
-
+    const matchesSearch = deal.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          deal.description.toLowerCase().includes(searchQuery.toLowerCase());
+    
     if (activeTab === "all") return matchesSearch;
     return matchesSearch && deal.status === activeTab;
   });
@@ -35,10 +34,11 @@ export function DealList({ deals }: DealListProps) {
       </div>
 
       <Tabs defaultValue="all" onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-5 mb-4">
+        <TabsList className="grid grid-cols-6 mb-4">
           <TabsTrigger value="all">All</TabsTrigger>
           <TabsTrigger value="pending">Pending</TabsTrigger>
           <TabsTrigger value="progress">In Progress</TabsTrigger>
+          {/* <TabsTrigger value="on-hold">On Hold</TabsTrigger> */}
           <TabsTrigger value="completed">Completed</TabsTrigger>
           <TabsTrigger value="cancelled">Cancelled</TabsTrigger>
         </TabsList>

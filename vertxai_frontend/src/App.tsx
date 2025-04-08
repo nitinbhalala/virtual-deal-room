@@ -13,6 +13,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import DealDetailsPage from "./pages/DealDetailsPage";
 import CreateDealPage from "./pages/CreateDealPage";
+import EditDealPage from "./pages/EditDealPage";
 import ProfilePage from "./pages/ProfilePage";
 
 // Auth Provider
@@ -34,6 +35,7 @@ const App = () => (
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/deals/create" element={<CreateDealPage />} />
             <Route path="/deals/:id" element={<DealDetailsPage />} />
+            <Route path="/deals/:id/edit" element={<EditDealPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

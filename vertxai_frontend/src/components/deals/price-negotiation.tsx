@@ -123,7 +123,7 @@ export function PriceNegotiation({
           <div className="bg-gray-50 px-4 py-2 border-b">
             <h4 className="font-medium text-sm">Offer History</h4>
           </div>
-          <div className="divide-y">
+          <div className="divide-y h-60 overflow-y-auto">
             {sortedOffers.map((offer) => {
               const isCurrentUserOffer = user?.id === offer.senderId;
               const canRespondToOffer = user && !isCurrentUserOffer && offer.status === "pending" && !isDisabled;

@@ -62,6 +62,10 @@
   @apply bg-red-100 text-red-800 border border-red-200;
 }
 
+.deal-status-on-hold {
+  @apply bg-purple-100 text-purple-800 border border-purple-200;
+}
+
 .chat-bubble-sender {
   @apply bg-primary text-white rounded-tl-xl rounded-tr-xl rounded-br-xl p-3 max-w-[75%];
 }

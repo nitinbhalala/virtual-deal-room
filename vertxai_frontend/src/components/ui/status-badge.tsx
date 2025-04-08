@@ -2,7 +2,7 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 
-type DealStatus = "pending" | "progress" | "completed" | "cancelled";
+type DealStatus = "pending" | "progress" | "completed" | "cancelled" | "on-hold";
 
 type StatusBadgeProps = {
   status: DealStatus;
@@ -25,6 +25,10 @@ const statusConfig = {
   cancelled: {
     label: "Cancelled",
     className: "deal-status-cancelled",
+  },
+  "on-hold": {
+    label: "On Hold",
+    className: "deal-status-on-hold",
   },
 };
 
