@@ -1,16 +1,25 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navbar } from "@/components/layout/navbar";
-import { ChatInterface } from "@/components/chat/chat-interface";
+// import { ChatInterface } from "@/components/chat/chat-interface";
 import { DocumentUploader } from "@/components/documents/document-uploader";
 import { PriceNegotiation } from "@/components/deals/price-negotiation";
 import { useToast } from "@/components/ui/use-toast";
-import { FileText, MessageSquare, DollarSign, Calendar, User, Edit, Pause } from "lucide-react";
+import {
+  FileText,
+  MessageSquare,
+  DollarSign,
+  Calendar,
+  User,
+  Edit,
+  Pause,
+} from "lucide-react";
+import ChatInterface from "@/components/chat/chat-interface";
 
 // Mock data types
 type Message = {
@@ -47,7 +56,7 @@ const mockDeal = {
   description:
     "Development of a custom CRM system with customer management, invoicing, and reporting features. Including 3 months of support and bug fixes after delivery.",
   price: 15000,
-  status: "progress" as "pending" | "progress" | "completed" | "cancelled" ,
+  status: "progress" as "pending" | "progress" | "completed" | "cancelled",
   createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
   seller: {
     id: "seller-1",
@@ -63,7 +72,7 @@ const mockDeal = {
 const generateMockMessages = (): Message[] => {
   const messages: Message[] = [];
   const now = new Date();
-  
+
   const messageContents = [
     "Hi there, I'm interested in this deal.",
     "Great! What specific questions do you have?",
@@ -76,11 +85,13 @@ const generateMockMessages = (): Message[] => {
     "I've discussed with the team. We can do $14,200 as our best offer.",
     "That works for me. I'll prepare the documents.",
   ];
-  
+
   for (let i = 0; i < messageContents.length; i++) {
     const isEven = i % 2 === 0;
-    const timestamp = new Date(now.getTime() - (messageContents.length - i) * 3600000);
-    
+    const timestamp = new Date(
+      now.getTime() - (messageContents.length - i) * 3600000
+    );
+
     messages.push({
       id: `msg-${i + 1}`,
       content: messageContents[i],
@@ -90,7 +101,7 @@ const generateMockMessages = (): Message[] => {
       isRead: true,
     });
   }
-  
+
   return messages;
 };
 
@@ -155,12 +166,21 @@ const generateMockOffers = (): Offer[] => {
 };
 
 const DealDetailsPage = () => {
+  const location = useLocation();
+  const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+  // Create an instance of URLSearchParams with the query string
+  const queryParams = new URLSearchParams(location.search);
+
+  // Get the sellerId value
+  const sellerId = queryParams.get("sellerId");
+
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
   const { toast } = useToast();
-  
+
   const [deal, setDeal] = useState(mockDeal);
+  
   const [messages, setMessages] = useState<Message[]>([]);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [offers, setOffers] = useState<Offer[]>([]);
@@ -182,39 +202,42 @@ const DealDetailsPage = () => {
     }, 800);
   }, [id, isAuthenticated, navigate]);
 
-  const handleSendMessage = (content: string) => {
-    const newMessage: Message = {
-      id: `msg-${Date.now()}`,
-      content,
-      senderId: user?.id || "",
-      senderName: user?.name || "",
-      timestamp: new Date(),
-      isRead: false,
-    };
-    
-    setMessages([...messages, newMessage]);
-    
-    // Simulate reply after 2 seconds
-    if (messages.length < 15) {
-      setTimeout(() => {
-        const replyMessage: Message = {
-          id: `msg-${Date.now() + 1}`,
-          content: "Thanks for your message. I'll get back to you soon.",
-          senderId: user?.role === "buyer" ? "seller-1" : "buyer-1",
-          senderName: user?.role === "buyer" ? "Tech Solutions Inc." : "Global Commerce Ltd.",
-          timestamp: new Date(),
-          isRead: false,
-        };
-        
-        setMessages((prevMessages) => [...prevMessages, replyMessage]);
-      }, 2000);
-    }
-  };
+  // const handleSendMessage = (content: string) => {
+  //   const newMessage: Message = {
+  //     id: `msg-${Date.now()}`,
+  //     content,
+  //     senderId: user?.id || "",
+  //     senderName: user?.name || "",
+  //     timestamp: new Date(),
+  //     isRead: false,
+  //   };
+
+  //   setMessages([...messages, newMessage]);
+
+  //   // Simulate reply after 2 seconds
+  //   if (messages.length < 15) {
+  //     setTimeout(() => {
+  //       const replyMessage: Message = {
+  //         id: `msg-${Date.now() + 1}`,
+  //         content: "Thanks for your message. I'll get back to you soon.",
+  //         senderId: user?.role === "buyer" ? "seller-1" : "buyer-1",
+  //         senderName:
+  //           user?.role === "buyer"
+  //             ? "Tech Solutions Inc."
+  //             : "Global Commerce Ltd.",
+  //         timestamp: new Date(),
+  //         isRead: false,
+  //       };
+
+  //       setMessages((prevMessages) => [...prevMessages, replyMessage]);
+  //     }, 2000);
+  //   }
+  // };
 
   const handleUploadDocument = async (file: File) => {
     // Mock document upload
     await new Promise((resolve) => setTimeout(resolve, 1500));
-    
+
     const newDocument: Document = {
       id: `doc-${Date.now()}`,
       name: file.name,
@@ -223,9 +246,9 @@ const DealDetailsPage = () => {
       url: "#",
       uploadedAt: new Date(),
     };
-    
+
     setDocuments([...documents, newDocument]);
-    
+
     toast({
       title: "Document Uploaded",
       description: `${file.name} has been uploaded successfully.`,
@@ -235,9 +258,9 @@ const DealDetailsPage = () => {
   const handleDeleteDocument = async (id: string) => {
     // Mock document deletion
     await new Promise((resolve) => setTimeout(resolve, 500));
-    
+
     setDocuments(documents.filter((doc) => doc.id !== id));
-    
+
     toast({
       title: "Document Deleted",
       description: "The document has been removed.",
@@ -247,18 +270,18 @@ const DealDetailsPage = () => {
   const handleMakeOffer = async (amount: number) => {
     // Mock offer creation
     await new Promise((resolve) => setTimeout(resolve, 800));
-    
+
     const newOffer: Offer = {
       id: `offer-${Date.now()}`,
       amount,
       createdAt: new Date(),
-      senderId: user?.id || "",
+      senderId: user?._id || "",
       senderName: user?.name || "",
       status: "pending",
     };
-    
+
     setOffers([newOffer, ...offers]);
-    
+
     toast({
       title: "Offer Sent",
       description: `Your offer of $${amount.toLocaleString()} has been sent.`,
@@ -268,19 +291,19 @@ const DealDetailsPage = () => {
   const handleAcceptOffer = async (offerId: string) => {
     // Mock offer acceptance
     await new Promise((resolve) => setTimeout(resolve, 800));
-    
+
     setOffers(
       offers.map((offer) =>
         offer.id === offerId ? { ...offer, status: "accepted" } : offer
       )
     );
-    
+
     // Update deal price to the accepted offer amount
     const acceptedOffer = offers.find((offer) => offer.id === offerId);
     if (acceptedOffer) {
       setDeal({ ...deal, price: acceptedOffer.amount });
     }
-    
+
     toast({
       title: "Offer Accepted",
       description: "You have accepted the offer.",
@@ -290,13 +313,13 @@ const DealDetailsPage = () => {
   const handleRejectOffer = async (offerId: string) => {
     // Mock offer rejection
     await new Promise((resolve) => setTimeout(resolve, 800));
-    
+
     setOffers(
       offers.map((offer) =>
         offer.id === offerId ? { ...offer, status: "rejected" } : offer
       )
     );
-    
+
     toast({
       title: "Offer Rejected",
       description: "You have rejected the offer.",
@@ -348,14 +371,15 @@ const DealDetailsPage = () => {
               </div>
             </div>
             <div className="flex flex-row md:flex-col gap-2 ml-auto">
-              <Button
-                variant="outline"
-                className="border-gray-300 text-gray-600 hover:bg-gray-50 flex items-center gap-2"
-                onClick={() => navigate(`/deals/${id}/edit`)}
-              >
-                <Edit className="h-4 w-4" /> Edit Deal
-              </Button>
-              
+            {currentUser.role !== 'buyer' && (
+                <Button
+                  variant="outline"
+                  className="border-gray-300 text-gray-600 hover:bg-gray-50 flex items-center gap-2"
+                  onClick={() => navigate(`/deals/${id}/edit`)}
+                >
+                  <Edit className="h-4 w-4" /> Edit Deal
+                </Button>
+              )}
               {deal.status === "progress" && (
                 <>
                   {/* <Button
@@ -386,7 +410,7 @@ const DealDetailsPage = () => {
                   </Button>
                 </>
               )}
-              
+
               {(deal.status === "pending" || deal.status === "progress") && (
                 <Button
                   variant="outline"
@@ -416,20 +440,41 @@ const DealDetailsPage = () => {
                   <MessageSquare className="h-4 w-4 mr-2" /> Messages
                 </TabsTrigger>
                 <TabsTrigger value="documents" className="flex items-center">
-                  <FileText className="h-4 w-4 mr-2" /> Documents ({documents.length})
+                  <FileText className="h-4 w-4 mr-2" /> Documents (
+                  {documents.length})
                 </TabsTrigger>
               </TabsList>
 
               <TabsContent value="chat" className="mt-0">
-              <div className="bg-white rounded-lg shadow-sm border h-[500px]">
-                  <ChatInterface
-                    messages={messages}
-                    onSendMessage={handleSendMessage}
-                    dealParticipants={{
-                      buyer: deal.buyer,
-                      seller: deal.seller,
-                    }}
-                  />
+                <div className="bg-white rounded-lg shadow-sm border h-[500px]">
+                  <div className="flex w-full h-full">
+                    {/* Left side: buyers list */}
+                    <div className="w-1/4 max-w-xs bg-gray-100 p-4 overflow-y-auto">
+                      {/* Example static buyer entries, replace with map from buyers list */}
+                      <div className="mb-3 p-2 bg-white shadow rounded">
+                        <div className="font-semibold text-sm">John Doe</div>
+                        <div className="text-xs text-gray-600">
+                          john@example.com
+                        </div>
+                      </div>
+                      <div className="mb-3 p-2 bg-white shadow rounded">
+                        <div className="font-semibold text-sm">Jane Smith</div>
+                        <div className="text-xs text-gray-600">
+                          jane@example.com
+                        </div>
+                      </div>
+                      {/* Add more buyers dynamically here */}
+                    </div>
+
+                    {/* Right side: Chat Interface */}
+                    <div className="flex-1 bg-white p-4">
+                      <ChatInterface
+                        // buyerId={CurrentUser?._id}
+                        sellerId={sellerId}
+                        dealId={id}
+                      />
+                    </div>
+                  </div>
                 </div>
               </TabsContent>
 

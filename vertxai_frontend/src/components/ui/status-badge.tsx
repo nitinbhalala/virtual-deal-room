@@ -1,8 +1,7 @@
 
-import React from "react";
 import { cn } from "@/lib/utils";
 
-type DealStatus = "pending" | "progress" | "completed" | "cancelled" | "on-hold";
+type DealStatus = "pending" | "progress" | "completed" | "cancelled";
 
 type StatusBadgeProps = {
   status: DealStatus;
@@ -15,7 +14,7 @@ const statusConfig = {
     className: "deal-status-pending",
   },
   progress: {
-    label: "In Progress",
+    label: "inProgress",
     className: "deal-status-progress",
   },
   completed: {
@@ -26,21 +25,21 @@ const statusConfig = {
     label: "Cancelled",
     className: "deal-status-cancelled",
   },
-  "on-hold": {
-    label: "On Hold",
-    className: "deal-status-on-hold",
-  },
 };
 
-export function StatusBadge({ status, className }: StatusBadgeProps) {
+export function StatusBadge({ status }: StatusBadgeProps) {
   const config = statusConfig[status];
+
+  if (!config) {
+    return null; // Or return a default badge if you prefer
+  }
 
   return (
     <span
       className={cn(
         "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium",
         config.className,
-        className
+        // className
       )}
     >
       {config.label}

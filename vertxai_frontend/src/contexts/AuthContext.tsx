@@ -5,7 +5,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { loginUser, registerUser } from "@/services/authService";
 
 type User = {
-  id: string;
+  _id: string;
   name: string;
   email: string;
   role: "buyer" | "seller";

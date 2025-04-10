@@ -30,6 +30,32 @@ const chatSchema = new mongoose.Schema(
         createdAt: { type: Date, default: Date.now },
       },
     ],
+    offers: [
+      {
+        offerId: {
+          type: String,
+          required: true,
+          unique: true,
+        },
+        buyerId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        },
+        sellerId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        },
+        price: { type: Number, required: true },
+        status: {
+          type: String,
+          enum: ["Reject", "Accept", ""], // Default is empty string for no offer yet
+          default: "",
+        },
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
   },
   {
     timestamps: true,
@@ -39,3 +65,4 @@ const chatSchema = new mongoose.Schema(
 
 const Chat = mongoose.model("Chat", chatSchema);
 export default Chat;
+

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,67 +9,78 @@ import { Deal } from "@/components/deals/deal-card";
 import { Plus, BarChart3 } from "lucide-react";
 import { getAllDeals } from "@/services/authService";
 import { getToken } from "@/utils/token";
+import { useChatSocket } from "@/hooks/useChatSocket";
 
 // Mock data for deals
-const generateMockDeals = (): Deal[] => {
-  const statuses: ("pending" | "progress" | "completed" | "cancelled")[] = [
-    "pending",
-    "progress",
-    "completed",
-    "cancelled",
-  ];
+// const generateMockDeals = (): Deal[] => {
+//   const statuses: ("pending" | "progress" | "completed" | "cancelled")[] = [
+//     "pending",
+//     "progress",
+//     "completed",
+//     "cancelled",
+//   ];
 
-  const deals: Deal[] = [];
+//   const deals: Deal[] = [];
 
-  for (let i = 1; i <= 10; i++) {
-    const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
-    const randomPrice = Math.floor(Math.random() * 9000) + 1000;
-    const randomDate = new Date();
-    randomDate.setDate(randomDate.getDate() - Math.floor(Math.random() * 30));
+//   for (let i = 1; i <= 10; i++) {
+//     const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+//     const randomPrice = Math.floor(Math.random() * 9000) + 1000;
+//     const randomDate = new Date();
+//     randomDate.setDate(randomDate.getDate() - Math.floor(Math.random() * 30));
 
-    deals.push({
-      id: `deal-${i}`,
-      title: `Business Deal ${i}`,
-      description: `This is a sample deal description for deal ${i}. It contains details about what this deal involves.`,
-      price: randomPrice,
-      status: randomStatus,
-      createdAt: randomDate.toISOString(),
-      messages: Math.floor(Math.random() * 20),
-      documents: Math.floor(Math.random() * 5),
-      seller: {
-        id: "seller-1",
-        name: "John Seller",
-      },
-      buyer: {
-        id: "buyer-1",
-        name: "Jane Buyer",
-      },
-    });
-  }
+//     deals.push({
+//       _id: `deal-${i}`,
+//       title: `Business Deal ${i}`,
+//       description: `This is a sample deal description for deal ${i}. It contains details about what this deal involves.`,
+//       price: randomPrice,
+//       status: randomStatus,
+//       createdAt: randomDate.toISOString(),
+//       messages: Math.floor(Math.random() * 20),
+//       documents: Math.floor(Math.random() * 5),
+//       seller: {
+//         _id: "seller-1",
+//         name: "John Seller",
+//       },
+//       buyer: {
+//         _id: "buyer-1",
+//         name: "Jane Buyer",
+//       },
+//     });
+//   }
 
-  return deals;
-};
+//   return deals;
+// };
+
 
 const DashboardPage = () => {
   const userDetails = JSON.parse(localStorage?.getItem("user"));
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [deals, setDeals] = useState<Deal[]>([]);
-  console.log("🚀 ~ DashboardPage ~ deals:", deals);
   const [isLoading, setIsLoading] = useState(true);
+  // const [buyersList, setBuyersList] = useState<any[]>([]);
+  // console.log("🚀 ~ DashboardPage ~ buyersList:", buyersList)
+
+  // const handleBuyerListReceived = useCallback((buyers: any[]) => {
+  //   setBuyersList(buyers);
+  // }, []);
+
+  // const { sendMessage } = useChatSocket({
+  //   onBuyerListReceived: handleBuyerListReceived,
+  // });
 
   useEffect(() => {
     if (!isAuthenticated && !localStorage.getItem("user")) {
       navigate("/login");
       return;
     }
-    setDeals(generateMockDeals);
+    // setDeals(generateMockDeals);
 
     const fetchDeals = async () => {
       try {
         const alldeals = await getAllDeals();
         console.log("🚀 ~ fetchDeals ~ alldeals:", alldeals);
-        // setDeals(alldeals);
+        setDeals(alldeals);
       } catch (error) {
         console.error("Error fetching deals:", error);
       } finally {
@@ -80,14 +91,23 @@ const DashboardPage = () => {
     fetchDeals();
   }, [isAuthenticated, navigate]);
 
+  // const myDeals = deals.filter((deal) => {
+  //   if (user?.role === "buyer") {
+  //     return deal.buyer._id === user._id;
+  //   } else {
+  //     return deal.seller._id === user._id;
+  //   }
+  // });
+
   const myDeals = deals.filter((deal) => {
-    if (user?.role === "buyer") {
-      return deal.buyer.id === user.id;
+    if (!deal || !user) return false;
+ 
+    if (user.role === "buyer") {
+      return deal?.buyer?._id === user._id;
     } else {
-      return deal.seller.id === user.id;
+      return deal?.seller?._id === user._id;
     }
   });
-
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />

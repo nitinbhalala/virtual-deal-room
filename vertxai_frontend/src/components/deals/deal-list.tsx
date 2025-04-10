@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { DealCard, Deal } from "./deal-card";
 import { Input } from "@/components/ui/input";
@@ -14,9 +13,10 @@ export function DealList({ deals }: DealListProps) {
   const [activeTab, setActiveTab] = useState("all");
 
   const filteredDeals = deals.filter((deal) => {
-    const matchesSearch = deal.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          deal.description.toLowerCase().includes(searchQuery.toLowerCase());
-    
+    const matchesSearch =
+      deal.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      deal.description.toLowerCase().includes(searchQuery.toLowerCase());
+
     if (activeTab === "all") return matchesSearch;
     return matchesSearch && deal.status === activeTab;
   });
@@ -47,7 +47,7 @@ export function DealList({ deals }: DealListProps) {
           {filteredDeals.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredDeals.map((deal) => (
-                <DealCard key={deal.id} deal={deal} />
+                <DealCard key={deal._id} deal={deal} />
               ))}
             </div>
           ) : (
