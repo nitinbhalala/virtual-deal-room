@@ -7,3 +7,4 @@ const SOCKET_URL = process.env.VITE_WS_BASE_URL
 export const socket: Socket = io(SOCKET_URL, {
   autoConnect: false, // we'll manually connect it
 });
+

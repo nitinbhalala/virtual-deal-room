@@ -8,6 +8,11 @@ type User = {
     role: "buyer" | "seller";
 };
 
+export interface DocumentResponse {
+    token: string;
+    user: any; // Replace `any` with the actual user type if available
+  }
+
 // ✅ Register
 export const registerUser = async (data: {
     name: string;
@@ -47,6 +52,23 @@ export const getAllDeals = async () => {
     return response.data; // should return { token, user }
 };
 
+
+
+//Show Deals
+// export const getAlldocument = async (dealId,buyerId,sellerId) => {
+//     const response = await api.get(`/document/${dealId}${buyerId}${sellerId}`);
+//     return response.data; // should return { token, user }
+// };
+
+export const getAllDocument = async (
+  dealId: string,
+  buyerId: string,
+  sellerId: string
+): Promise<DocumentResponse> => {
+  const url = `/document?dealId=${dealId}&buyerId=${buyerId}&sellerId=${sellerId}`;
+  const response = await api.get<DocumentResponse>(url);
+  return response.data;
+};
 
 
 // ✅ Get current user (if your backend supports)

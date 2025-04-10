@@ -22,6 +22,7 @@ type DocumentUploaderProps = {
 export function DocumentUploader({ onUpload, documents, onDelete }: DocumentUploaderProps) {
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
   const [isDragging, setIsDragging] = useState(false);
+  
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -129,6 +130,8 @@ export function DocumentUploader({ onUpload, documents, onDelete }: DocumentUplo
           ))}
         </div>
       )}
+
+      
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
         {documents.map((doc) => (

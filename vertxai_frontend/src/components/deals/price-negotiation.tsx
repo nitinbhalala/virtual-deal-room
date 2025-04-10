@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { ArrowRight, DollarSign, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
+import { useChatSocket } from "@/hooks/useChatSocket";
 
 type Offer = {
   id: string;
@@ -22,6 +23,9 @@ type PriceNegotiationProps = {
   onAcceptOffer: (offerId: string) => Promise<void>;
   onRejectOffer: (offerId: string) => Promise<void>;
   dealStatus: "pending" | "progress" | "completed" | "cancelled";
+  selectedSeller: any;
+  dealId: string;
+  sellerId: string;
 };
 
 export function PriceNegotiation({
@@ -31,16 +35,41 @@ export function PriceNegotiation({
   onAcceptOffer,
   onRejectOffer,
   dealStatus,
+  selectedSeller,
+  dealId,
+  sellerId
 }: PriceNegotiationProps) {
+  console.log("🚀 ~ selectedSeller:", selectedSeller)
   const [newOfferAmount, setNewOfferAmount] = useState(initialPrice.toString());
+  const [negotiationData, setNegotiationData] = useState([]);
   const { user } = useAuth();
+  console.log("🚀 ~ user:", user)
   const [hasPendingOffer, setHasPendingOffer] = useState(false);
+
+  const handelOnChatOfferDataGet = (data) => {
+    console.log("🚀 ~ handelOnChatOfferDataGet ~ data:", data)
+    setNegotiationData(data?.offers)
+
+  }
+
+  const { newOffer, chatGetOffer } = useChatSocket({
+    onChatOfferDataGet: handelOnChatOfferDataGet,
+
+  })
+
+
+  useEffect(() => {
+    if (selectedSeller?.roomId && sellerId) {
+      const payload = { roomId: selectedSeller?.roomId, buyerId: selectedSeller?.buyerId, sellerId, dealId }
+      chatGetOffer(payload)
+    }
+  }, [selectedSeller, sellerId])
 
   useEffect(() => {
     // Check if current user has a pending offer
     if (user) {
       const userPendingOffer = offers.find(
-        (offer) => offer.senderId === user.id && offer.status === "pending"
+        (offer) => offer.senderId === user._id && offer.status === "pending"
       );
       setHasPendingOffer(!!userPendingOffer);
     }
@@ -49,10 +78,12 @@ export function PriceNegotiation({
   const handleMakeOffer = async () => {
     const amount = parseFloat(newOfferAmount);
     if (isNaN(amount) || amount <= 0) return;
-    
+
     try {
       await onMakeOffer(amount);
-      setHasPendingOffer(true);
+      const payload = { roomId: selectedSeller?.roomId, buyerId: selectedSeller?.buyerId, sellerId, dealId, price: amount }
+      newOffer(payload)
+      // setHasPendingOffer(true);
     } catch (error) {
       console.error("Failed to make offer:", error);
     }
@@ -125,9 +156,9 @@ export function PriceNegotiation({
           </div>
           <div className="divide-y h-60 overflow-y-auto">
             {sortedOffers.map((offer) => {
-              const isCurrentUserOffer = user?.id === offer.senderId;
+              const isCurrentUserOffer = user?._id === offer.senderId;
               const canRespondToOffer = user && !isCurrentUserOffer && offer.status === "pending" && !isDisabled;
-              
+
               return (
                 <div key={offer.id} className="p-4">
                   <div className="flex justify-between items-start">
