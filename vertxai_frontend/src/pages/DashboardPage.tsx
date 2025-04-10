@@ -8,48 +8,6 @@ import { DealList } from "@/components/deals/deal-list";
 import { Deal } from "@/components/deals/deal-card";
 import { Plus, BarChart3 } from "lucide-react";
 import { getAllDeals } from "@/services/authService";
-import { getToken } from "@/utils/token";
-import { useChatSocket } from "@/hooks/useChatSocket";
-
-// Mock data for deals
-// const generateMockDeals = (): Deal[] => {
-//   const statuses: ("pending" | "progress" | "completed" | "cancelled")[] = [
-//     "pending",
-//     "progress",
-//     "completed",
-//     "cancelled",
-//   ];
-
-//   const deals: Deal[] = [];
-
-//   for (let i = 1; i <= 10; i++) {
-//     const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
-//     const randomPrice = Math.floor(Math.random() * 9000) + 1000;
-//     const randomDate = new Date();
-//     randomDate.setDate(randomDate.getDate() - Math.floor(Math.random() * 30));
-
-//     deals.push({
-//       _id: `deal-${i}`,
-//       title: `Business Deal ${i}`,
-//       description: `This is a sample deal description for deal ${i}. It contains details about what this deal involves.`,
-//       price: randomPrice,
-//       status: randomStatus,
-//       createdAt: randomDate.toISOString(),
-//       messages: Math.floor(Math.random() * 20),
-//       documents: Math.floor(Math.random() * 5),
-//       seller: {
-//         _id: "seller-1",
-//         name: "John Seller",
-//       },
-//       buyer: {
-//         _id: "buyer-1",
-//         name: "Jane Buyer",
-//       },
-//     });
-//   }
-
-//   return deals;
-// };
 
 
 const DashboardPage = () => {

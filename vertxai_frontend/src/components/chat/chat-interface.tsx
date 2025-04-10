@@ -28,11 +28,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sellerId, dealId }) => {
     () => ({ sellerId, buyerId, dealId }),
     [sellerId, buyerId, dealId]
   );
-
+  
   const handleReceiveMessage = useCallback((newMessage: Message) => {
     setMessages((prev) => [...prev, newMessage]);
   }, []);
-
+  
   const handleChatJoined = useCallback(
     (roomId: string, chatHistory: Message[]) => {
       setRoomId(roomId);
@@ -40,11 +40,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sellerId, dealId }) => {
     },
     []
   );
-
+  
   const handleBuyerListReceived = useCallback((buyers: any[]) => {
     setBuyersList(buyers);
   }, []);
-
+  
   const { sendMessage } = useChatSocket({
     joinPayload,
     onReceiveMessage: handleReceiveMessage,

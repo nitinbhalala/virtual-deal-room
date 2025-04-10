@@ -258,6 +258,11 @@ export const useChatSocket = ({
     console.log(`📤 ${event} emitted:`, payload);
     socketRef.current.emit(event, payload);
   };
+  const joinChat = (event: string, payload: any) => {
+    if (!socketRef.current) return;
+    console.log(`📤 ${event} emitted:`, payload);
+    socketRef.current.emit(event, payload);
+  };
 
-  return { sendMessage };
+  return { sendMessage, joinChat };
 };
