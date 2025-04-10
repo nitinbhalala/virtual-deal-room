@@ -91,11 +91,5 @@ Develop a **Virtual Deal Room** platform where:
 
 ---
 
-## 📫 Connect with Us
-
-📄 **LinkedIn**: [Follow VertxAI on LinkedIn](https://www.linkedin.com/company/govertx/?viewAsMember=true)
-
----
-
 ## 📁 Folder Structure (Suggested)
 
