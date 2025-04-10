@@ -45,12 +45,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sellerId, dealId }) => {
     setBuyersList(buyers);
   }, []);
 
-  // const { sendMessage } = useChatSocket(
-  //   joinPayload,
-  //   handleReceiveMessage,
-  //   handleChatJoined,
-  // );
-
   const { sendMessage } = useChatSocket({
     joinPayload,
     onReceiveMessage: handleReceiveMessage,
@@ -58,12 +52,24 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sellerId, dealId }) => {
     onBuyerListReceived: handleBuyerListReceived,
   });
 
+  // const handleSendMessage = () => {
+  //   if (!messageText.trim() || !roomId) return;
+  //   sendMessage(roomId, sellerId, messageText);
+  //   setMessageText("");
+  // };
+
   const handleSendMessage = () => {
     if (!messageText.trim() || !roomId) return;
-    sendMessage(roomId, sellerId, messageText);
+  
+    sendMessage("send_message", {
+      roomId,
+      senderId: sellerId,
+      text: messageText,
+    });
+  
     setMessageText("");
   };
-
+  
   return (
     <div className="w-full max-w-xl mx-auto mt-6 p-4 border rounded shadow">
       <h2 className="text-xl font-semibold mb-4">Chat Room</h2>
