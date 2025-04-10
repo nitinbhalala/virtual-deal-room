@@ -1,91 +1,7 @@
-// // src/controllers/dealController.js
-// import Deal from "../model/deal.model.js";
-// import User from "../model/user.model.js";
-
-// // Create Deal
-// export const createDeal = async (req, res) => {
-//   try {
-//     const { title, description, price, status } = req.body;
-//     const userId = req.user.id;
-
-//     const deal = new Deal({ title, description, price, userId, status });
-//     const savedDeal = await deal.save();
-
-//     res
-//       .status(201)
-//       .json({ message: "Deal created successfully", deal: savedDeal });
-//   } catch (err) {
-//     res
-//       .status(500)
-//       .json({ message: "Error while creating deal", error: err.message });
-//   }
-// };
-
-// // Get Deal by ID (from req.body) or All Deals (optionally filtered by ?userId=...)
-// export const getDeals = async (req, res) => {
-//   try {
-//     const { id, userId, status } = req.query;
-
-//     if (id) {
-//       const deal = await Deal.findById(id).populate("userId", "name email");
-//       if (!deal) {
-//         return res.status(404).json({ message: "Deal not found" });
-//       }
-//       return res.status(200).json(deal);
-//     }
-
-//     // Build dynamic filter
-//     const filter = {};
-//     if (userId) filter.userId = userId;
-//     if (status) filter.status = status;
-
-//     const deals = await Deal.find(filter).populate("userId", "name email role");
-//     res.status(200).json(deals);
-//   } catch (err) {
-//     res
-//       .status(500)
-//       .json({ message: "Error fetching deals", error: err.message });
-//   }
-// };
-
-
-// // Update Deal
-// export const updateDeal = async (req, res) => {
-//   try {
-//     const updatedDeal = await Deal.findByIdAndUpdate(req.params.id, req.body, {
-//       new: true,
-//     });
-//     if (!updatedDeal) {
-//       return res.status(404).json({ message: "Deal not found" });
-//     }
-//     res
-//       .status(200)
-//       .json({ message: "Deal updated successfully", deal: updatedDeal });
-//   } catch (err) {
-//     res
-//       .status(500)
-//       .json({ message: "Error while updating deal", error: err.message });
-//   }
-// };
-
-// // Delete Deal
-// export const deleteDeal = async (req, res) => {
-//   try {
-//     const deletedDeal = await Deal.findByIdAndDelete(req.params.id);
-//     if (!deletedDeal) {
-//       return res.status(404).json({ message: "Deal not found" });
-//     }
-//     res.status(200).json({ message: "Deal deleted successfully" });
-//   } catch (err) {
-//     res
-//       .status(500)
-//       .json({ message: "Error while deleting deal", error: err.message });
-//   }
-// };
-
-
+import Chat from "../model/chat.model.js";
 import Deal from "../model/deal.model.js";
 import User from "../model/user.model.js";
+
 
 // Create Deal
 export const createDeal = async (req, res) => {
@@ -113,6 +29,56 @@ export const createDeal = async (req, res) => {
 };
 
 // Get Deals or Deal by ID
+// export const getDeals = async (req, res) => {
+//   try {
+//     const { id, sellerId, buyerId, status } = req.query;
+
+//     const filter = {};
+//     if (sellerId) filter.sellerId = sellerId;
+//     if (buyerId) filter.buyerId = buyerId;
+//     if (status) filter.status = status;
+
+//     if (id) {
+//       const deal = await Deal.findById(id)
+//         .populate("sellerId", "name")
+//         .populate("buyerId", "name");
+
+//       if (!deal) {
+//         return res.status(404).json({ message: "Deal not found" });
+//       }
+
+//       const formatted = {
+//         ...deal.toObject(),
+//         seller: deal.sellerId,
+//         buyer: deal.buyerId,
+//       };
+
+//       delete formatted.sellerId;
+//       delete formatted.buyerId;
+
+//       return res.status(200).json(formatted);
+//     }
+
+//     const deals = await Deal.find(filter)
+//       .populate("sellerId", "name")
+//       .populate("buyerId", "name");
+
+//     const formattedDeals = deals.map((deal) => {
+//       const obj = deal.toObject();
+//       obj.seller = obj.sellerId;
+//       obj.buyer = obj.buyerId;
+//       delete obj.sellerId;
+//       delete obj.buyerId;
+//       return obj;
+//     });
+
+//     res.status(200).json(formattedDeals);
+//   } catch (err) {
+//     res.status(500).json({ message: "Error fetching deals", error: err.message });
+//   }
+// };
+
+// Get Deals or Deal by ID
 export const getDeals = async (req, res) => {
   try {
     const { id, sellerId, buyerId, status } = req.query;
@@ -122,8 +88,9 @@ export const getDeals = async (req, res) => {
     if (buyerId) filter.buyerId = buyerId;
     if (status) filter.status = status;
 
+    // If deal id is passed, work on a single deal
     if (id) {
-      const deal = await Deal.findById(id)
+      let deal = await Deal.findById(id)
         .populate("sellerId", "name")
         .populate("buyerId", "name");
 
@@ -131,21 +98,39 @@ export const getDeals = async (req, res) => {
         return res.status(404).json({ message: "Deal not found" });
       }
 
+      // Count matching chats for this deal
+      const messagesCount = await Chat.countDocuments({ dealId: deal._id });
+
+      // If messages count is different from current deal.messages, update it
+      if (deal.messages !== messagesCount) {
+        deal.messages = messagesCount;
+        await deal.save();
+      }
+
       const formatted = {
         ...deal.toObject(),
         seller: deal.sellerId,
         buyer: deal.buyerId,
       };
-
       delete formatted.sellerId;
       delete formatted.buyerId;
 
       return res.status(200).json(formatted);
     }
 
-    const deals = await Deal.find(filter)
+    // Process for multiple deals based on the filter
+    let deals = await Deal.find(filter)
       .populate("sellerId", "name")
       .populate("buyerId", "name");
+
+    // Loop through the deals to update their messages count
+    for (let deal of deals) {
+      const messagesCount = await Chat.countDocuments({ dealId: deal._id });
+      if (deal.messages !== messagesCount) {
+        deal.messages = messagesCount;
+        await deal.save();
+      }
+    }
 
     const formattedDeals = deals.map((deal) => {
       const obj = deal.toObject();
@@ -161,7 +146,6 @@ export const getDeals = async (req, res) => {
     res.status(500).json({ message: "Error fetching deals", error: err.message });
   }
 };
-
 
 // Update Deal
 export const updateDeal = async (req, res) => {

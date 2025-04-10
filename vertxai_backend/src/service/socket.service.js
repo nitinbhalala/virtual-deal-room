@@ -12,14 +12,12 @@ export const setupSocket = (server) => {
   });
 
   io.on("connection", (socket) => {
-    console.log("🔌 New client connected:", socket.id);
 
     /* ===== Negotiation Events ===== */
 
     socket.on("join_deal_room", ({ dealId }) => {
       const room = `room_deal_${dealId}`;
       socket.join(room);
-      console.log(`User joined negotiation room: ${room}`);
     });
 
     // New Offer Event - creates a new offer from either buyer or seller
@@ -45,7 +43,6 @@ export const setupSocket = (server) => {
             status: status || "", // Default empty string if not provided
             createdAt: new Date(),
           };
-          console.log("🚀 ~ offer:", offer);
 
           chat.offers.push(offer);
           // Ensure offers are stored in descending order by createdAt
@@ -183,9 +180,7 @@ export const setupSocket = (server) => {
           const roomId = uuidv4();
           chat = new Chat({ roomId, sellerId, buyerId, dealId, messages: [] });
           await chat.save();
-          console.log("Created new chat room:", roomId);
         } else {
-          console.log("Using existing chat room:", chat.roomId);
         }
 
         socket.join(chat.roomId);
@@ -420,7 +415,6 @@ socket.on("single_buyer_list", async ({ sellerId, dealId, status }) => {
     });
 
     socket.on("disconnect", () => {
-      console.log("❌ Client disconnected:", socket.id);
     });
   });
 

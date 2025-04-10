@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 
 const chatSchema = new mongoose.Schema(
   {
@@ -36,6 +37,7 @@ const chatSchema = new mongoose.Schema(
           type: String,
           required: true,
           unique: true,
+          default: uuidv4(),
         },
         buyerId: {
           type: mongoose.Schema.Types.ObjectId,
@@ -50,7 +52,7 @@ const chatSchema = new mongoose.Schema(
         price: { type: Number, required: true },
         status: {
           type: String,
-          enum: ["Reject", "Accept", ""], // Default is empty string for no offer yet
+          enum: ["reject", "accept", ""], // Default is empty string for no offer yet
           default: "",
         },
         createdAt: { type: Date, default: Date.now },
