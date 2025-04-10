@@ -1,4 +1,4 @@
-# Welcome to your Lovable project
+# Welcome to your Virtual Deal Room project
 
 ## Project info
 
@@ -10,9 +10,9 @@ There are several ways of editing your application.
 
 **Use Lovable**
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/02e1a029-8996-4e82-b8ba-171d117d3d1c) and start prompting.
+Simply visit the [Virtual Deal Room Project](https://lovable.dev/projects/02e1a029-8996-4e82-b8ba-171d117d3d1c) and start prompting.
 
-Changes made via Lovable will be committed automatically to this repo.
+Changes made via Virtual Deal Room will be committed automatically to this repo.
 
 **Use your preferred IDE**
 
@@ -64,7 +64,7 @@ This project is built with .
 
 Simply open [Lovable](https://lovable.dev/projects/02e1a029-8996-4e82-b8ba-171d117d3d1c) and click on Share -> Publish.
 
-## Can I connect a custom domain to my Lovable project?
+## Can I connect a custom domain to my Virtual Deal Room project?
 
 Yes it is!
 
