@@ -40,7 +40,7 @@ export function PriceNegotiation({
   sellerId
 }: PriceNegotiationProps) {
   console.log("🚀 ~ selectedSeller:", selectedSeller)
-  const [newOfferAmount, setNewOfferAmount] = useState(initialPrice.toString());
+  const [newOfferAmount, setNewOfferAmount] = useState(initialPrice?.toString());
   const [negotiationData, setNegotiationData] = useState([]);
   const { user } = useAuth();
   console.log("🚀 ~ user:", user)
@@ -106,14 +106,14 @@ export function PriceNegotiation({
         <div className="flex items-center justify-between mb-6 p-3 bg-gray-50 rounded-lg">
           <div>
             <p className="text-sm text-gray-500">Initial Price</p>
-            <p className="text-xl font-bold">${initialPrice.toLocaleString()}</p>
+            <p className="text-xl font-bold">${initialPrice?.toLocaleString()}</p>
           </div>
           {latestOffer && (
             <>
               <ArrowRight className="text-gray-400" />
               <div>
                 <p className="text-sm text-gray-500">Latest Offer</p>
-                <p className="text-xl font-bold">${latestOffer.amount.toLocaleString()}</p>
+                <p className="text-xl font-bold">${latestOffer?.amount?.toLocaleString()}</p>
               </div>
             </>
           )}
@@ -156,34 +156,34 @@ export function PriceNegotiation({
           </div>
           <div className="divide-y h-60 overflow-y-auto">
             {sortedOffers.map((offer) => {
-              const isCurrentUserOffer = user?._id === offer.senderId;
-              const canRespondToOffer = user && !isCurrentUserOffer && offer.status === "pending" && !isDisabled;
+              const isCurrentUserOffer = user?._id === offer?.senderId;
+              const canRespondToOffer = user && !isCurrentUserOffer && offer?.status === "pending" && !isDisabled;
 
               return (
                 <div key={offer.id} className="p-4">
                   <div className="flex justify-between items-start">
                     <div>
                       <p className="text-sm font-medium mb-1">
-                        {isCurrentUserOffer ? "You" : offer.senderName} offered ${offer.amount.toLocaleString()}
+                        {isCurrentUserOffer ? "You" : offer?.senderName} offered ${offer?.amount?.toLocaleString()}
                       </p>
                       <p className="text-xs text-gray-500">
                         {offer.createdAt.toLocaleString()}
                       </p>
                     </div>
                     <div>
-                      {offer.status === "pending" ? (
+                      {offer?.status === "pending" ? (
                         canRespondToOffer ? (
                           <div className="flex space-x-2">
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => onRejectOffer(offer.id)}
+                              onClick={() => onRejectOffer(offer?.id)}
                             >
                               Reject
                             </Button>
                             <Button
                               size="sm"
-                              onClick={() => onAcceptOffer(offer.id)}
+                              onClick={() => onAcceptOffer(offer?.id)}
                             >
                               Accept
                             </Button>
@@ -193,7 +193,7 @@ export function PriceNegotiation({
                             Pending
                           </Badge>
                         )
-                      ) : offer.status === "accepted" ? (
+                      ) : offer?.status === "accepted" ? (
                         <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
                           Accepted
                         </Badge>

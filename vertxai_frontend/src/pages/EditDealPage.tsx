@@ -10,6 +10,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Navbar } from "@/components/layout/navbar";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2, ArrowLeft } from "lucide-react";
+import { getDealById, updateDealById } from "@/services/authService";
+import api from "@/utils/api";
 
 // Mock deal for demonstration
 const mockDeal = {
@@ -35,7 +37,7 @@ const EditDealPage = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
   const { toast } = useToast();
-  
+
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [title, setTitle] = useState("");
@@ -45,39 +47,48 @@ const EditDealPage = () => {
 
   // Fetch deal data
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate("/login");
-      return;
-    }
+    const fetchDeal = async () => {
+      try {
+        const data = await getDealById(id); // add `!` if you're sure id is not undefined
 
-    // Mock API call to fetch deal data
-    setIsLoading(true);
-    setTimeout(() => {
-      // In a real application, you would fetch the deal data from an API
-      setTitle(mockDeal.title);
-      setDescription(mockDeal.description);
-      setPrice(mockDeal.price.toString());
-      setStatus(mockDeal.status);
-      setIsLoading(false);
-    }, 800);
-  }, [id, isAuthenticated, navigate]);
+
+        const validStatuses = ["pending", "progress", "completed", "cancelled", "on-hold"] as const;
+        setStatus(validStatuses.includes(data?.status) ? data?.status : "pending");
+
+        setTitle(data?.title);
+        setDescription(data?.description);
+        setPrice(data?.price?.toString());
+      } catch (error) {
+        console.error("Failed to fetch deal:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (id) fetchDeal();
+  }, [id]);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
 
     try {
-      // Mock API call to update deal
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await updateDealById(id, {
+        title,
+        description,
+        price: parseFloat(price),
+        status,
+      });
 
       toast({
         title: "Deal Updated",
         description: "Your deal has been successfully updated",
       });
 
-      // Redirect to deal details page
       navigate(`/deals/${id}`);
     } catch (error) {
+      console.error("Error updating deal:", error);
       toast({
         title: "Error",
         description: "Failed to update deal. Please try again.",
@@ -87,6 +98,7 @@ const EditDealPage = () => {
       setIsSaving(false);
     }
   };
+
 
   if (isLoading) {
     return (
@@ -172,9 +184,9 @@ const EditDealPage = () => {
             </div>
 
             <div className="flex gap-4 pt-4">
-              <Button 
-                type="button" 
-                variant="outline" 
+              <Button
+                type="button"
+                variant="outline"
                 onClick={() => navigate(`/deals/${id}`)}
                 disabled={isSaving}
               >
