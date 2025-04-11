@@ -513,7 +513,7 @@ export const useChatSocket = ({
 
     return () => {
       console.log("🔌 Disconnecting socket...");
-      socket.disconnect();
+      // socket.disconnect();
     };
   }, [joinPayload, onReceiveMessage, onChatJoined, onBuyerListReceived, onSingleBuyerListReceived,onChatOfferDataGet]);
 
