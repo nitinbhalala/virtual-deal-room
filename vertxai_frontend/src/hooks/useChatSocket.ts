@@ -470,7 +470,7 @@ export const useChatSocket = ({
       }
     });
 
-    socket.on("error", (error) => {console.log("Socket error:", error);});
+    socket.on("connect_error", (error) => {console.log("Socket error:", error);});
     
     socket.on('chat_joined', ({ roomId, chatHistory }) => {
       console.log('✅ chat_joined received:', { roomId, chatHistory });
