@@ -8,7 +8,7 @@ export const setupSocket = (server) => {
   const io = new Server(server, {
     cors: {
       // origin: "*", // Adjust this in production
-      origin: "https://virtual-deal-room-ten.vercel.app", // Adjust this in production
+      origin: "wss://virtual-deal-room-ten.vercel.app", // Adjust this in production
     },
   });
 
