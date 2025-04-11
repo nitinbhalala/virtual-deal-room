@@ -440,8 +440,13 @@ export const useChatSocket = ({
   const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
-    const socket = io(import.meta.env.VITE_WS_BASE_URL as string, {
+    const socket = io(import.meta.env.VITE_WS_BASE_URL as string, {      
       transports: ["websocket"],
+      path: "/socket.io", // 👈 important!
+      autoConnect: false,
+      timeout: 60000,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 5000,
     });
 
     socketRef.current = socket;
