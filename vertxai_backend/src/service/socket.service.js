@@ -7,7 +7,8 @@ import User from "../model/user.model.js"; // Import User model
 export const setupSocket = (server) => {
   const io = new Server(server, {
     cors: {
-      origin: "*", // Adjust this in production
+      // origin: "*", // Adjust this in production
+      origin: "https://virtual-deal-room-ten.vercel.app", // Adjust this in production
     },
   });
 
